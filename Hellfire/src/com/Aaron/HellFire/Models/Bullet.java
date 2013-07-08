@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Bullet extends MoveableEntity
 {
-	//public STATIC
+	public static float SPEED = 15;
 
 	public Bullet(float SPEED, float rotation, float width, float height,Vector2 position, Vector2 velocity)
 	{

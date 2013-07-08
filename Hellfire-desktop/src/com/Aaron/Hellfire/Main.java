@@ -11,7 +11,7 @@ public class Main
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "HellFire " + HellFire.VERSION;
 		cfg.useGL20 = true;
-		cfg.width = 1080;
+		cfg.width = 1280;
 		cfg.height = 720;
 		
 		new LwjglApplication(new HellFire(), cfg);

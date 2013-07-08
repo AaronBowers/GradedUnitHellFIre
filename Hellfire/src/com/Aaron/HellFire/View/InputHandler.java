@@ -68,6 +68,14 @@ public class InputHandler implements InputProcessor
 		default:
 			break;
 		}
+		
+		//insert weapon keybind here
+		
+		//if tap change weapon to next preset
+		//forward 1 bullet
+		//back 1 bullet
+		//horizontal 2 bullets
+		//diag 4 bullets
 		return true;
 	}
 
@@ -83,8 +91,9 @@ public class InputHandler implements InputProcessor
 	{
 		touch.set(screenX, screenY, 0);
 		world.getRenderer().getCamera().unproject(touch);
-		vec2Touch.set(touch.x, touch.y);
-		world.addBullet(new Bullet(8, 1, 1,1, new Vector2(ship.getPosition().x, ship.getPosition().y), new Vector2(vec2Touch.sub(ship.getPosition()).nor())));
+		//vec2Touch.set(touch.x, touch.y);
+		//first values are origin, second set are destination path. bullet will travel indefinatly
+		world.addBullet(new  Bullet(Bullet.SPEED, 1, .1f,.1f, new Vector2(ship.getPosition().x+1, ship.getPosition().y+.8f/2), new Vector2(1,0)));
 		return true;
 	}
 

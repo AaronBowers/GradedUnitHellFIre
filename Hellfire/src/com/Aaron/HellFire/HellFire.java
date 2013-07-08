@@ -17,7 +17,7 @@ public class HellFire extends Game
 	public void create()
 	{	
 		log = new FPSLogger();
-		setScreen(new SplashScreen(this));
+		setScreen(new GameScreen(this));
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package com.Aaron.HellFire.Models;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
-public class Tracker extends MoveableEntity
+public class Tracker extends Enemy
 {
 	
 	float ROTATION_SPEED = 300;
@@ -16,12 +16,15 @@ public class Tracker extends MoveableEntity
 	}
 
 
+
+
+
 	@Override
-	public void update(Ship ship)
+	public void advance(float delta, Ship ship)
 	{
-		position.lerp(ship.getPosition(), Gdx.graphics.getDeltaTime());
+		position.lerp(ship.getPosition(), delta);
 		
-		rotation += Gdx.graphics.getDeltaTime() * ROTATION_SPEED;
+		rotation += delta * ROTATION_SPEED;
 		
 		if (rotation > 360)
 			rotation -= 360;
@@ -29,6 +32,7 @@ public class Tracker extends MoveableEntity
 		
 		super.update(ship);
 
+		
 	}
 
 }

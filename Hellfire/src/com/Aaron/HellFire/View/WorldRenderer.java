@@ -3,6 +3,7 @@ package com.Aaron.HellFire.View;
 import java.util.Iterator;
 
 import com.Aaron.HellFire.Models.Bullet;
+import com.Aaron.HellFire.Models.Enemy;
 import com.Aaron.HellFire.Models.Ship;
 import com.Aaron.HellFire.Models.Tracker;
 import com.badlogic.gdx.Gdx;
@@ -27,10 +28,12 @@ public class WorldRenderer
 	Texture shipTexture, trackerTexture, bulletTexture;
 	float width, height, shipwidth, shipheight;
 	ShapeRenderer sr;
-	Tracker tracker;
 	Array<Bullet> bullets;
+	Array<Enemy> enemies;
 	Iterator<Bullet> bIter;
+	Iterator<Enemy> eIter;
 	Bullet b;
+	Enemy e;
 	
 	public WorldRenderer(World world)
 	{
@@ -38,25 +41,29 @@ public class WorldRenderer
 		
 		world.setRenderer(this);
 		
+		width = (Gdx.graphics.getWidth()/100);
+		height = (Gdx.graphics.getHeight()/100);
 		
-		width = (Gdx.graphics.getWidth()/80) ;
-		height = (Gdx.graphics.getHeight() /80);
-		
+		//width = (Gdx.graphics.getWidth()/280);
+		//height = (Gdx.graphics.getHeight()/130);
 		
 		
 		cam = new OrthographicCamera();
 		cam.setToOrtho(false, width,height);
 		cam.update();
 		
+		
+		
 		batch = new SpriteBatch();
 		batch.setProjectionMatrix(cam.combined);
 		
 		
-		shipTexture = new Texture("data/GameSprites/ship.png");//ship graphic
+		shipTexture = new Texture("data/GameSprites/Ship.png");//ship graphic
+		shipTexture.getTextureData();
 		shipTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
 		
 
-		trackerTexture = new Texture("data/GameSprites/Tracker.png");
+		trackerTexture = new Texture("data/GameSprites/Tracker.png");//tracker graphic
 		trackerTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
 		
 		bulletTexture = new Texture("data/GameSprites/bullet.png");
@@ -67,11 +74,11 @@ public class WorldRenderer
 	
 	public void render()
 	{
-		Gdx.gl.glClearColor(0,0,0,1);
+		Gdx.gl.glClearColor(0,0,0,1);//gl clear screen
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
 		ship = world.getShip();
-		tracker = world.getTracker();
+		enemies = world.getEnemies();
 		bullets = world.getBullets();
 		
 		cam.position.set(ship.getPosition().x, ship.getPosition().y, 0);
@@ -79,28 +86,75 @@ public class WorldRenderer
 		
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
+		
 		//draws player ship
-		batch.draw(shipTexture,ship.getPosition().x,		ship.getPosition().y, 0,0, 	ship.getWidth() ,	ship.getHeight(), 1,1,ship.getRotation(), 0,0,shipTexture.getWidth(),shipTexture.getHeight(),false,false);
+		
+		batch.draw(	
+					shipTexture,//define texture region
+					ship.getPosition().x, ship.getPosition().y, 0, 0,
+					ship.getWidth(), ship.getHeight()
+					, 1f, 1f, ship.getRotation(), 0, 0,
+					shipTexture.getWidth(), shipTexture.getHeight(), false, false
+					);
+		
 		//draws enemy ship
-		batch.draw(trackerTexture, tracker.getPosition().x, tracker.getPosition().y, 	tracker.getWidth()/2, tracker.getHeight()/2,tracker.getWidth(), tracker.getHeight(),1,1, tracker.getRotation(),0,0, trackerTexture.getWidth(), trackerTexture.getHeight(), false, false);
+		eIter = enemies.iterator();
+		while(eIter.hasNext())
+		{
+			e = eIter.next();
+			batch.draw(
+				//Draw tracker
+				trackerTexture,//texture name will have to change to accomdate more than one enemy
+				e.getPosition().x, e.getPosition().y,
+				e.getWidth()/2, e.getHeight()/2,
+				e.getWidth(), e.getHeight(), 1, 1,
+				e.getRotation(), 0, 0,
+				//Texture size, streach's texture
+				trackerTexture.getWidth(), trackerTexture.getHeight(),
+				false, false
+				);
+		}
+		
 		//draws bullet
-		bIter = bullets.iterator();
+			bIter = bullets.iterator();
 			
 			while(bIter.hasNext())
 			{
 				b = bIter.next();
-				batch.draw(bulletTexture, b.getPosition().x,		b.getPosition().y, 0,0, 	b.getWidth() ,	b.getHeight(), 1,1,b.getRotation(), 0,0,bulletTexture.getWidth(),bulletTexture.getHeight(),false,false);
+				batch.draw(
+					bulletTexture,
+					b.getPosition().x,b.getPosition().y, 0,0,
+					b.getWidth(), b.getHeight(), 1,1,
+					b.getRotation(), 0,0,
+					bulletTexture.getWidth(),bulletTexture.getHeight(),
+					false,false
+				);
 			}
-			
 		batch.end();
 		
 		sr.setProjectionMatrix(cam.combined);
 		sr.begin(ShapeType.Rectangle);
 		sr.setColor(Color.CYAN);
+		//encapsulate these in sr(); this makes the hit detection bounds
 		sr.rect(ship.getBounds().x, ship.getBounds().y, ship.getBounds().width, ship.getBounds().height);
 		
-		sr.setColor(Color.RED);
-		sr.rect(tracker.getBounds().x,tracker.getBounds().y, tracker.getBounds().width, tracker.getBounds().height);
+		
+		sr.setColor(Color.RED); 
+		//enemies bounding boxes
+		eIter = enemies.iterator();
+		while(eIter.hasNext())
+		{
+			e = eIter.next();
+			sr.rect(e.getBounds().x,e.getBounds().y, e.getBounds().width, e.getBounds().height);
+		}
+		//bullets bounding boxes
+		bIter = bullets.iterator();
+		while(bIter.hasNext())
+		{
+			b = bIter.next();
+			sr.rect(b.getBounds().x,b.getBounds().y, b.getBounds().width, b.getBounds().height);
+		}
+		
 		sr.end();
 	}
 	
