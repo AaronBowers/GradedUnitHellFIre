@@ -21,14 +21,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 public class MainMenu implements Screen
 {
 	HellFire game;
+	public static int count = 0;
 	Stage stage;
-	BitmapFont black;
-	BitmapFont white;
+	BitmapFont black, white, font;
 	TextureAtlas atlas;
 	Skin skin;
 	SpriteBatch batch;
 	TextButton button;
 	Label label;
+	
+	
+
 
 	public MainMenu(HellFire game)
 	{
@@ -38,14 +41,19 @@ public class MainMenu implements Screen
 	@Override
 	public void render(float delta)
 	{
-		Gdx.gl.glClearColor(0,0,0,1);
+		Gdx.gl.glClearColor(0,0,1,1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
+		font = new BitmapFont();
+		
+
 		
 		stage.act(delta);
 		
 		batch.begin();
 		stage.draw();
-		//white.draw(batch, "angry masons", Gdx.graphics.getWidth() / 2 - 15, Gdx.graphics.getHeight() / 2 + 100);
+		font.draw(batch, "qweqweqw", Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+		
 		batch.end();
 	}
 
@@ -93,6 +101,8 @@ public class MainMenu implements Screen
 		label.setY(Gdx.graphics.getHeight() / 2  + 100);
 		label.setWidth(width);
 		label.setAlignment(Align.center);		
+		label.setColor(0.0f, 0.0f, 1.0f, 1.0f);
+		
 	
 		stage.addActor(button);
 		stage.addActor(label);
