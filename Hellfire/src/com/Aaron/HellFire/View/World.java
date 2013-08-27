@@ -17,7 +17,7 @@ public class World
 	
 	HellFire game;
 	
-	Ship ship;// takes our built ship models
+	Ship ship;
 	
 	public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 
@@ -28,15 +28,8 @@ public class World
 	
 	WorldRenderer wr;
 	
-	//4 iterators for four bullet types
 	Iterator<Bullet> bIter;
-
-	//Iterator<BulletFwrd> FbIter;
-	//Iterator<BulletFwrd> FbIter;
-	
 	Bullet b;
-
-	
 	
 	Iterator<Enemy> eIter;
 	Enemy e;
@@ -199,16 +192,18 @@ public class World
 			b.update(ship);
 		}
 		
-		
+		//ship-level container Collision
 		if(ship.getPosition().x < 0){ship.getPosition().x = 0;} //left boundry
 		
 		if(ship.getPosition().y < 0){ship.getPosition().y = 0;} //bottom boundry
 		
 		if(ship.getPosition().x > 1280 - ship.getWidth() ){ship.getPosition().x = 1280 - ship.getWidth();} //left boundry
 		
-		if(ship.getPosition().y > 720 - ship.getHeight()){ship.getPosition().y = 720 - ship.getHeight();} //bottom boundry
+		if(ship.getPosition().y > 650 - ship.getHeight()){ship.getPosition().y = 650 - ship.getHeight();} //bottom boundry
 		
-		//player-level boundary collision
+		//player static object collision
+		//what to expect- level objects
+		
 		//player-enemy collision
 		eIter = enemies.iterator();
 		while(eIter.hasNext())
@@ -217,16 +212,15 @@ public class World
 			e.advance(Gdx.graphics.getDeltaTime(), ship);
 			//if(ship.getPosition().x > ship.getWidth()){ship.getPosition().x = ship.getWidth();} //left boundry
 			
-			
 			if(ship.getBounds().overlaps(e.getBounds()))
 			{
 				if (ship.isRecovering())
 				{
-					Gdx.app.log(HellFire.LOG, "Ship Recovering!");
+					//Gdx.app.log(HellFire.LOG, "Ship Recovering!");
 				}
 				else
 				{
-					Gdx.app.log(HellFire.LOG, "Hull Collision!");
+					//Gdx.app.log(HellFire.LOG, "Hull Collision!");
 					//update player lives
 					ship.loseLife();
 				}
@@ -245,30 +239,14 @@ public class World
 			{
 				e = eIter.next();
 				
-				//Detects if the bullets in forward momentum are past the top and right bondry of the level, if they are then 
-				//the bullets are erased from memory.
-				if(b.getPosition().x > 1280 || b.getPosition().y > 720)
-				{
-					bIter.remove();
-					Gdx.app.log(HellFire.LOG, "hit level boundry");
-				}
-				
-				if(b.getPosition().x < 0 || b.getPosition().y < 0)
-				{
-					bIter.remove();
-					Gdx.app.log(HellFire.LOG, "hit level boundry");
-				}
-
-				
 				if(e.getBounds().overlaps(b.getBounds()))
 				{
-					Gdx.app.log(HellFire.LOG, "Enemy Disintegrated with Fb!");
+					//Gdx.app.log(HellFire.LOG, "Enemy Disintegrated with Fb!");
 					//bIter.remove();//revomes item from array
 					//update player score
 					ship.addScore(e.getType() + e.getRank());
 					eIter.remove();
 					bIter.remove();
-					
 					
 					/*if(e.isDead())
 					{
@@ -278,13 +256,26 @@ public class World
 					//HellfireAudio.explode();//sound clip for enemy death
 				}
 				
-
-				
+				//checks if bullets pass level boundary, bullets must be made first to ensure safe boundary check
+				//for this reason it has been placed within the bullet iterator. 
+				// so it will only check bullet level collision if there is a bullet available to check
+				if(b.getPosition().x > 1280 || b.getPosition().y > 720 || b.getPosition().x < 0 || b.getPosition().y < 0)
+				{
+					bIter.remove();
+				}
 			}
 		}
 		
+		//enemy-enemy collision
+		//make this work so an enemy can occupy the same space as another enemy
 		
-		//check dead enemies
+		
+		//bullet level collision
+
+		
+		
+		/*
+		//check dead enemies		
 		for(int i = 0; i < enemies.size(); i++)
 		{
 			if(enemies.get(i).isDead())
@@ -294,7 +285,7 @@ public class World
 				enemies.remove(i);
 				i--;
 			}
-		}
+		}*/
 			
 	}	
 		

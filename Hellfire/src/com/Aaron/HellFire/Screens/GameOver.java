@@ -1,16 +1,20 @@
 package com.Aaron.HellFire.Screens;
 
+import com.Aaron.HellFire.HellFire;
+import com.Aaron.HellFire.View.World;
+import com.Aaron.HellFire.View.WorldRenderer;
+
 public class GameOver
 {
-// displays Game over with score
+
+	HellFire game;
+	World world;
+	WorldRenderer render;
 	
-	//GAME OVER TEXT
-	
-	//CURRENT GAME SESSION SCORE
-	
-	//RESTART GAME BUTTON
-	
-	//QUIT BUTTON
+	public GameOver(HellFire game)
+	{
+		this.game = game;
+	}
 	
 	
 

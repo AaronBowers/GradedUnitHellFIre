@@ -55,7 +55,7 @@ public class WorldRenderer
 
 	Ship ship;
 	OrthographicCamera cam;//the view of the world!! or just the view of the current bounds showing the view of the stage... in this case space.
-	Texture shipTexture, trackerTexture, BulletTexture, BwrdBulletTexture;
+	Texture shipTexture, trackerTexture, BulletTexture, BwrdBulletTexture, EnergyBarTexture, HudBgTexture;
 	float width, height, shipwidth, shipheight;
 	ShapeRenderer sr;
 	
@@ -118,6 +118,13 @@ public class WorldRenderer
 		scoreFont = new BitmapFont(Gdx.files.internal("data/whitefont.fnt"),
 		Gdx.files.internal("data/whitefont_0.tga"), false);
 		
+		
+		
+		//Game Textures 
+		
+		HudBgTexture = new Texture("Hud/HudBg.png");
+		HudBgTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
+		
 		shipTexture = new Texture("data/GameSprites/Ship.png");//ship graphic
 		shipTexture.getTextureData();
 		shipTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
@@ -131,6 +138,9 @@ public class WorldRenderer
 		
 		BwrdBulletTexture = new Texture("data/GameSprites/bullet.png");
 		BwrdBulletTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
+		
+		EnergyBarTexture = new Texture("Hud/energyBar.png");
+		EnergyBarTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
 		
 		sr = new ShapeRenderer();
 		
@@ -230,45 +240,64 @@ public class WorldRenderer
     		{
     			System.out.println("A down");
     			ship.setFiring(false);
-    			
+    			int weaponDrain = 0;
     			int weaponMode = ship.getWeaponMode();
+    			
     			if(ship.getEnergyLevel() > 0)
     			{
     				if (weaponMode == 0)//fire forwards
     				{
     					//Gdx.app.log(HellFire.LOG, "Firing Weapons");
-    					int weaponDrain = 4;
-    					ship.setEndergyLevel(weaponDrain);
-    					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+45), new Vector2(1,0)));
-    				}
-    				else if(weaponMode == 1)//fire backwards
-    				{
-    					int weaponDrain = 4;
-    					ship.setEndergyLevel(weaponDrain);
-    					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+45), new Vector2(-1,0)));
-    				}
-    				else if(weaponMode == 2)//fire backwards
-    				{
-    					int weaponDrain = 8;
-    					ship.setEndergyLevel(weaponDrain);
-    					world.addBullet(new  Bullet(Bullet.SPEED, 90, .3f,.1f, new Vector2(ship.getPosition().x+180/2, ship.getPosition().y+90), new Vector2(0,1)));//up bullet
-    					world.addBullet(new  Bullet(Bullet.SPEED, -90, .3f,.1f, new Vector2(ship.getPosition().x+180/2, ship.getPosition().y), new Vector2(0,-1)));//down bullet
-    				}
-    				else if(weaponMode == 3)//fire backwards
-    				{
-    					int weaponDrain = 16;
-    					ship.setEndergyLevel(weaponDrain);
-    					
-    					//front top right and bottom right
-    					world.addBullet(new  Bullet(Bullet.SPEED, 45, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+90), new Vector2(1,1)));//top right
-    					world.addBullet(new  Bullet(Bullet.SPEED, -45, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y), new Vector2(1,-1)));//bottom right
-    					
-    					//back top left and bottom left
-    					world.addBullet(new  Bullet(Bullet.SPEED, -135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y), new Vector2(-1,-1)));//bottom left
-    					world.addBullet(new  Bullet(Bullet.SPEED, 135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+90), new Vector2(-1,1)));//top left
+    					weaponDrain = 4;
+    					if(ship.getEnergyLevel() >= weaponDrain)
+    					{
+        					ship.setEndergyLevel(weaponDrain);
+        					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+45), new Vector2(1,0)));
+    					}
 
     				}
+    				
+    				if(weaponMode == 1)//fire backwards
+    				{
+    					weaponDrain = 4;
+    					if(ship.getEnergyLevel() >= weaponDrain)
+    					{
+        					ship.setEndergyLevel(weaponDrain);
+        					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+45), new Vector2(-1,0)));
+    					}
+
+    				}
+    				
+    				if(weaponMode == 2)//fire backwards
+    				{
+    					weaponDrain = 8;
+    					if(ship.getEnergyLevel() >= weaponDrain)
+    					{
+        					ship.setEndergyLevel(weaponDrain);
+        					world.addBullet(new  Bullet(Bullet.SPEED, 90, .3f,.1f, new Vector2(ship.getPosition().x+180/2, ship.getPosition().y+90), new Vector2(0,1)));//up bullet
+        					world.addBullet(new  Bullet(Bullet.SPEED, -90, .3f,.1f, new Vector2(ship.getPosition().x+180/2, ship.getPosition().y), new Vector2(0,-1)));//down bullet
+    					}
+    				}
+    				
+    				if(weaponMode == 3)//fire backwards
+    				{
+    					weaponDrain = 16;
+    					if(ship.getEnergyLevel() >= weaponDrain)
+    					{
+	    					ship.setEndergyLevel(weaponDrain);
+	    					
+	    					//front top right and bottom right
+	    					world.addBullet(new  Bullet(Bullet.SPEED, 45, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+90), new Vector2(1,1)));//top right
+	    					world.addBullet(new  Bullet(Bullet.SPEED, -45, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y), new Vector2(1,-1)));//bottom right
+	    					
+	    					//back top left and bottom left
+	    					world.addBullet(new  Bullet(Bullet.SPEED, -135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y), new Vector2(-1,-1)));//bottom left
+	    					world.addBullet(new  Bullet(Bullet.SPEED, 135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+90), new Vector2(-1,1)));//top left
+    					}
+    				}
+
     			}
+    		
     			
     			return true;
     		}
@@ -323,26 +352,33 @@ public class WorldRenderer
 		
 												//==== PLayer user interface ===
 		
+		//DRAWS HUD BACKGROUND
+		//This is a test image, used to gauge hud background placement
+		batch.draw(HudBgTexture, 0, 720-70, 1280, 70);
+		
 		//DRAW PLAYER STATS
 		scoreFont.setColor(0.0f, 0.0f, 1.0f, 1.0f);
 		//scoreFont.scale(0);
 		CharSequence scoreStr = "score : " + ship.getScore();
 		scoreFont.draw(batch, scoreStr, 1000, 700);
 		
+		
 		//DRAW PLAYER LIVES
 		CharSequence livesStr = " : " + ship.getLives();
 		scoreFont.draw(batch, livesStr, 560, 700);
-		
 		//DRAWS LIVES SPRITE
 		batch.draw(shipTexture, 500, 680, 180/3, 80/3);
 		
+
+		//draws energy bar sprite
+		batch.draw(EnergyBarTexture, 10, 690, 300 / 100 * ship.getEnergyLevel(), 80/3);
 		//DRAW PLAYER ENERGY
 		CharSequence energyStr = "Energy : " + ship.getEnergyLevel();
-		scoreFont.draw(batch, energyStr, 10, 700);
+		scoreFont.draw(batch, energyStr, 10, 710);
 		
 		//DRAW PLAYER WEAPON LV
 		CharSequence weaponLvStr = "WpnLv : " + ship.getWeaponLv();
-		scoreFont.draw(batch, weaponLvStr, 100, 650);
+		scoreFont.draw(batch, weaponLvStr, 50, 690);
 		
 		//DRAW PLAYER WEAPON MODE ID
 		CharSequence weaponModeStr = "Mode : " + ship.getWeaponMode();
@@ -362,20 +398,9 @@ public class WorldRenderer
 		//========================== ship movment updates ===============================================
 		
 		//move player ship with d pad
-		if(movex == true)
-		{
-			ship.getVelocity().x = 0;
-			Gdx.app.log(HellFire.LOG, "TRUE!");
-		}
-		else if(movex == false)
-		{
-			ship.getVelocity().x =+ touchpad.getKnobPercentX();
-		}
-		//if (movex == true)
-		//{
+		ship.getVelocity().x =+ touchpad.getKnobPercentX();
 		ship.getVelocity().y =+ touchpad.getKnobPercentY();
-		//}
-		
+
 		// =============================================================== end ============================
 		
 		

@@ -112,8 +112,6 @@ public class Ship extends MoveableEntity
 		bounds.x = position.x;
 		bounds.y = position.y;
 		
-		
-
 		//drains the ships resrves of engery, the ship can recharge its power but it on has a limited amount
 		//long periods of rapid fire will drain the ships power, resulting in a slow firing rate
 		if(firing)
