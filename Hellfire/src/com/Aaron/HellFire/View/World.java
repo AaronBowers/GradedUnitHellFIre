@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.Aaron.HellFire.HellFire;
-import com.Aaron.HellFire.Models.BulletFwrd;
-import com.Aaron.HellFire.Models.BulletBwrd;
+import com.Aaron.HellFire.Models.Bullet;
 import com.Aaron.HellFire.Models.Enemy;
 import com.Aaron.HellFire.Models.Ship;
 import com.Aaron.HellFire.Models.Tracker;
@@ -20,8 +19,8 @@ public class World
 	
 	Ship ship;// takes our built ship models
 	
-	public ArrayList<BulletFwrd> Fbullets = new ArrayList<BulletFwrd>();
-	public ArrayList<BulletBwrd> Bbullets = new ArrayList<BulletBwrd>();
+	public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+
 	//public ArrayList<BulletFwrd> Fbullets = new ArrayList<BulletFwrd>();
 	//public ArrayList<BulletFwrd> Fbullets = new ArrayList<BulletFwrd>();
 	
@@ -30,13 +29,13 @@ public class World
 	WorldRenderer wr;
 	
 	//4 iterators for four bullet types
-	Iterator<BulletFwrd> FbIter;
-	Iterator<BulletBwrd> BbIter;
+	Iterator<Bullet> bIter;
+
 	//Iterator<BulletFwrd> FbIter;
 	//Iterator<BulletFwrd> FbIter;
 	
-	BulletFwrd Fb;
-	BulletBwrd Bb;
+	Bullet b;
+
 	
 	
 	Iterator<Enemy> eIter;
@@ -193,35 +192,31 @@ public class World
 		}
 
 		//updates bullets
-		
-		//forward bullet update
-		FbIter = Fbullets.iterator();
-		while(FbIter.hasNext())
+		bIter = bullets.iterator();
+		while(bIter.hasNext())
 		{
-			Fb = FbIter.next();
-			Fb.update(ship);
-		}
-		
-		//Backward bullet update
-		BbIter = Bbullets.iterator();
-		while(BbIter.hasNext())
-		{
-			Bb = BbIter.next();
-			Bb.update(ship);
+			b = bIter.next();
+			b.update(ship);
 		}
 		
 		
+		if(ship.getPosition().x < 0){ship.getPosition().x = 0;} //left boundry
 		
-		//player-cameraBoundry collision
+		if(ship.getPosition().y < 0){ship.getPosition().y = 0;} //bottom boundry
 		
+		if(ship.getPosition().x > 1280 - ship.getWidth() ){ship.getPosition().x = 1280 - ship.getWidth();} //left boundry
 		
-
+		if(ship.getPosition().y > 720 - ship.getHeight()){ship.getPosition().y = 720 - ship.getHeight();} //bottom boundry
+		
+		//player-level boundary collision
 		//player-enemy collision
 		eIter = enemies.iterator();
 		while(eIter.hasNext())
 		{
 			e = eIter.next();
 			e.advance(Gdx.graphics.getDeltaTime(), ship);
+			//if(ship.getPosition().x > ship.getWidth()){ship.getPosition().x = ship.getWidth();} //left boundry
+			
 			
 			if(ship.getBounds().overlaps(e.getBounds()))
 			{
@@ -241,23 +236,38 @@ public class World
 		
 		// ======= Bullets Collisions =======================================================================================//
 		//enemy-bullet collision for forward bullets
-		FbIter = Fbullets.iterator();
-		while(FbIter.hasNext())
+		bIter = bullets.iterator();
+		while(bIter.hasNext())
 		{
-			Fb = FbIter.next();
+			b = bIter.next();
 			eIter = enemies.iterator();
 			while(eIter.hasNext())
 			{
 				e = eIter.next();
 				
-				if(e.getBounds().overlaps(Fb.getBounds()))
+				//Detects if the bullets in forward momentum are past the top and right bondry of the level, if they are then 
+				//the bullets are erased from memory.
+				if(b.getPosition().x > 1280 || b.getPosition().y > 720)
+				{
+					bIter.remove();
+					Gdx.app.log(HellFire.LOG, "hit level boundry");
+				}
+				
+				if(b.getPosition().x < 0 || b.getPosition().y < 0)
+				{
+					bIter.remove();
+					Gdx.app.log(HellFire.LOG, "hit level boundry");
+				}
+
+				
+				if(e.getBounds().overlaps(b.getBounds()))
 				{
 					Gdx.app.log(HellFire.LOG, "Enemy Disintegrated with Fb!");
 					//bIter.remove();//revomes item from array
 					//update player score
 					ship.addScore(e.getType() + e.getRank());
 					eIter.remove();
-					FbIter.remove();
+					bIter.remove();
 					
 					
 					/*if(e.isDead())
@@ -267,41 +277,11 @@ public class World
 					}*/
 					//HellfireAudio.explode();//sound clip for enemy death
 				}
-			}
-		}
-		
-		//enemy-bullet collision for backward bullets
-		BbIter = Bbullets.iterator();
-		while(BbIter.hasNext())
-		{
-			Bb = BbIter.next();
-			eIter = enemies.iterator();
-			while(eIter.hasNext())
-			{
-				e = eIter.next();
 				
-				if(e.getBounds().overlaps(Bb.getBounds()))
-				{
-					Gdx.app.log(HellFire.LOG, "Enemy Disintegrated with Bb!");
-					//bIter.remove();//revomes item from array
-					//update player score
-					ship.addScore(e.getType() + e.getRank());
-					eIter.remove();
-					BbIter.remove();
-					
-					
-					/*if(e.isDead())
-					{
-						ship.addScore(e.getType() + e.getRank());
-						eIter.remove();
-					}*/
-					//HellfireAudio.explode();//sound clip for enemy death
-				}
+
+				
 			}
 		}
-		
-		
-		
 		
 		
 		//check dead enemies
@@ -320,26 +300,16 @@ public class World
 		
 
 	//forward bullets 
-	public void addFwrdBullet(BulletFwrd Fb)
+	public void addBullet(Bullet Fb)
 	{
-		Fbullets.add(Fb);
+		bullets.add(Fb);
 	}
 	
-	public ArrayList<BulletFwrd> getFBullets()
+	public ArrayList<Bullet> getBullets()
 	{
-		return Fbullets;
+		return bullets;
 	}
 	
-	//Backward bullets
-	public void addBwrdBullet(BulletBwrd Bb)
-	{
-		Bbullets.add(Bb);
-	}
-	
-	public ArrayList<BulletBwrd> getBBullets()
-	{
-		return Bbullets;
-	}
 	
 
 	

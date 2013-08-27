@@ -1,5 +1,5 @@
 package com.Aaron.HellFire.Models;
-import com.Aaron.HellFire.Models.BulletFwrd;
+import com.Aaron.HellFire.Models.Bullet;
 
 import com.Aaron.HellFire.HellFire;
 import com.Aaron.HellFire.View.InputHandler;
@@ -76,7 +76,7 @@ public class Ship extends MoveableEntity
 	
 	public void changeMode()
 	{
-		if (weaponMode >= 4)
+		if (weaponMode >= 3)
 		{
 			weaponMode = 0;//reverts weapon state to mode1
 		}

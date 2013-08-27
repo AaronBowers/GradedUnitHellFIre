@@ -26,12 +26,12 @@ public class Tracker extends Enemy
 	@Override
 	public void advance(float delta, Ship ship)
 	{
-		position.lerp(ship.getPosition(), delta);//follows the player ship if on
+		//position.lerp(ship.getPosition(), delta);//follows the player ship if on
 		//places enemy on static position
 		
 		
 		
-		//position.y  = 720 / 2;
+		position.y  = 720 / 2;
 		//position.x -r;
 		
 		rotation += delta * ROTATION_SPEED;

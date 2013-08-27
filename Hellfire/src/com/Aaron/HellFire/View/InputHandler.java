@@ -1,8 +1,7 @@
 package com.Aaron.HellFire.View;
 
 import com.Aaron.HellFire.HellFire;
-import com.Aaron.HellFire.Models.BulletBwrd;
-import com.Aaron.HellFire.Models.BulletFwrd;
+import com.Aaron.HellFire.Models.Bullet;
 import com.Aaron.HellFire.Models.Ship;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Gdx;
@@ -121,11 +120,11 @@ public class InputHandler implements InputProcessor
 				//Gdx.app.log(HellFire.LOG, "Firing Weapons");
 				int weaponDrain = 10;
 				ship.setEndergyLevel(weaponDrain);
-				world.addFwrdBullet(new  BulletFwrd(BulletFwrd.SPEED, 0, .1f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+45), new Vector2(1,0)));
+				world.addBullet(new  Bullet(Bullet.SPEED, 0, .1f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+45), new Vector2(1,0)));
 			}
 			else if(weaponMode == 1)//fire backwards
 			{
-				world.addBwrdBullet(new  BulletBwrd(BulletBwrd.SPEED, 0, .1f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+45), new Vector2(1,0)));
+				world.addBullet(new  Bullet(Bullet.SPEED, 0, .1f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+45), new Vector2(1,0)));
 			}
 		}
 	}

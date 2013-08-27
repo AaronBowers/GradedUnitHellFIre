@@ -6,9 +6,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.Aaron.HellFire.Models.BulletBwrd;
-import com.Aaron.HellFire.Models.BulletFwrd;
+import com.Aaron.HellFire.HellFire;
+import com.Aaron.HellFire.Models.Bullet;
 import com.Aaron.HellFire.Models.Enemy;
+import com.Aaron.HellFire.Models.MoveableEntity;
 import com.Aaron.HellFire.Models.Ship;
 import com.Aaron.HellFire.Models.Tracker;
 import com.Aaron.HellFire.Screens.GameScreen;
@@ -47,26 +48,26 @@ public class WorldRenderer
 	World world;
 	SpriteBatch batch;
 	InputHandler inputhandler;
+	MoveableEntity moveableentity;
 	
 	//must make this explictly white
 	BitmapFont scoreFont, black, white, font;
 
 	Ship ship;
 	OrthographicCamera cam;//the view of the world!! or just the view of the current bounds showing the view of the stage... in this case space.
-	Texture shipTexture, trackerTexture, FwrdBulletTexture, BwrdBulletTexture;
+	Texture shipTexture, trackerTexture, BulletTexture, BwrdBulletTexture;
 	float width, height, shipwidth, shipheight;
 	ShapeRenderer sr;
 	
-	ArrayList<BulletFwrd> Fbullets;
-	Iterator<BulletFwrd> FbIter;
-	BulletFwrd Fb;
-	
-	ArrayList<BulletBwrd> Bbullets;
-	Iterator<BulletBwrd> BbIter;
-	BulletBwrd Bb;
+	ArrayList<Bullet> bullets;
+	Iterator<Bullet> bIter;
+	Bullet b;
 	
 	ArrayList<Enemy> enemies;
 	Iterator<Enemy> eIter;
+	
+	public boolean movey;
+	public boolean movex;
 
 	
 	
@@ -125,8 +126,8 @@ public class WorldRenderer
 		trackerTexture = new Texture("data/GameSprites/Tracker.png");//tracker graphic
 		trackerTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
 		
-		FwrdBulletTexture = new Texture("data/GameSprites/bullet.png");
-		FwrdBulletTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
+		BulletTexture = new Texture("data/GameSprites/bullet.png");
+		BulletTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
 		
 		BwrdBulletTexture = new Texture("data/GameSprites/bullet.png");
 		BwrdBulletTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
@@ -205,7 +206,8 @@ public class WorldRenderer
     	
       	//draw B Button
     	Gdx.input.setInputProcessor(stage);
-    		
+    	
+    	//set sizes for on screen buttons
     	ButtonB = new TextButton(" B ", style);
     	ButtonB.setWidth(110);
     	ButtonB.setHeight(110);
@@ -221,6 +223,7 @@ public class WorldRenderer
 		white = new BitmapFont(Gdx.files.internal("data/whitefont.fnt"), false);
 		black  = new BitmapFont(Gdx.files.internal("data/font.fnt"),false);
 		
+		//controller for buttons
     	buttonA.addListener(new InputListener()
     	{
     		public boolean touchDown (InputEvent event, float x, float y, int pointer, int button)
@@ -234,15 +237,36 @@ public class WorldRenderer
     				if (weaponMode == 0)//fire forwards
     				{
     					//Gdx.app.log(HellFire.LOG, "Firing Weapons");
-    					int weaponDrain = 10;
+    					int weaponDrain = 4;
     					ship.setEndergyLevel(weaponDrain);
-    					world.addFwrdBullet(new  BulletFwrd(BulletFwrd.SPEED, 0, .1f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+45), new Vector2(1,0)));
+    					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+45), new Vector2(1,0)));
     				}
     				else if(weaponMode == 1)//fire backwards
     				{
-    					int weaponDrain = 10;
+    					int weaponDrain = 4;
     					ship.setEndergyLevel(weaponDrain);
-    					world.addBwrdBullet(new  BulletBwrd(BulletBwrd.SPEED, 0, .1f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+45), new Vector2(1,0)));
+    					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+45), new Vector2(-1,0)));
+    				}
+    				else if(weaponMode == 2)//fire backwards
+    				{
+    					int weaponDrain = 8;
+    					ship.setEndergyLevel(weaponDrain);
+    					world.addBullet(new  Bullet(Bullet.SPEED, 90, .3f,.1f, new Vector2(ship.getPosition().x+180/2, ship.getPosition().y+90), new Vector2(0,1)));//up bullet
+    					world.addBullet(new  Bullet(Bullet.SPEED, -90, .3f,.1f, new Vector2(ship.getPosition().x+180/2, ship.getPosition().y), new Vector2(0,-1)));//down bullet
+    				}
+    				else if(weaponMode == 3)//fire backwards
+    				{
+    					int weaponDrain = 16;
+    					ship.setEndergyLevel(weaponDrain);
+    					
+    					//front top right and bottom right
+    					world.addBullet(new  Bullet(Bullet.SPEED, 45, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+90), new Vector2(1,1)));//top right
+    					world.addBullet(new  Bullet(Bullet.SPEED, -45, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y), new Vector2(1,-1)));//bottom right
+    					
+    					//back top left and bottom left
+    					world.addBullet(new  Bullet(Bullet.SPEED, -135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y), new Vector2(-1,-1)));//bottom left
+    					world.addBullet(new  Bullet(Bullet.SPEED, 135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+90), new Vector2(-1,1)));//top left
+
     				}
     			}
     			
@@ -272,6 +296,10 @@ public class WorldRenderer
     	
     	stage.addActor(buttonA);
     	stage.addActor(ButtonB);
+    	
+    	
+    	
+    	
 	
 	}
 	
@@ -283,8 +311,7 @@ public class WorldRenderer
 		
 		ship = world.getShip();
 		enemies = world.getEnemies();
-		Fbullets = world.getFBullets();
-		Bbullets = world.getBBullets();
+		bullets = world.getBullets();
 		
 		//refresh camera position allow to focus player ship
 		//cam.position.set(ship.getPosition().x, ship.getPosition().y, 0);
@@ -332,7 +359,24 @@ public class WorldRenderer
 		
 		//draw plasma Emission trail
 
+		//========================== ship movment updates ===============================================
 		
+		//move player ship with d pad
+		if(movex == true)
+		{
+			ship.getVelocity().x = 0;
+			Gdx.app.log(HellFire.LOG, "TRUE!");
+		}
+		else if(movex == false)
+		{
+			ship.getVelocity().x =+ touchpad.getKnobPercentX();
+		}
+		//if (movex == true)
+		//{
+		ship.getVelocity().y =+ touchpad.getKnobPercentY();
+		//}
+		
+		// =============================================================== end ============================
 		
 		
 		//draws player ship
@@ -346,9 +390,10 @@ public class WorldRenderer
 		
 		//dpad
 		
-		//move player ship with d pad
-		ship.getVelocity().y =+ touchpad.getKnobPercentY();
-		ship.getVelocity().x =+ touchpad.getKnobPercentX();
+		//set true false catchs here to stop momentum
+		
+		
+
 		
 		//draws enemy ship
 		eIter = enemies.iterator();
@@ -369,39 +414,23 @@ public class WorldRenderer
 		}
 		
 		//draws player bullets ==============================================
-			FbIter = Fbullets.iterator();
+			bIter = bullets.iterator();
 			
-			while(FbIter.hasNext())
+			while(bIter.hasNext())
 			{
-				Fb = FbIter.next();
+				b = bIter.next();
 				batch.draw(
-					FwrdBulletTexture,
-					Fb.getPosition().x,Fb.getPosition().y, 0,0,
-					Fb.getWidth(), Fb.getHeight(), 1,1,
-					Fb.getRotation(), 0,0,
-					FwrdBulletTexture.getWidth(),FwrdBulletTexture.getHeight(),
+					BulletTexture,
+					b.getPosition().x,b.getPosition().y, 0,0,
+					b.getWidth(), b.getHeight(), 1,1,
+					b.getRotation(), 0,0,
+					BulletTexture.getWidth(),BulletTexture.getHeight(),
 					false,false
 				);
 				//PlasmaEmission.setPosition(0 ,0);
 				//PlasmaEmission.draw(batch, Gdx.graphics.getDeltaTime());
 			}
 			
-			BbIter = Bbullets.iterator();
-			
-			while(BbIter.hasNext())
-			{
-				Bb = BbIter.next();
-				batch.draw(
-					BwrdBulletTexture,
-					Bb.getPosition().x,Bb.getPosition().y, 0,0,
-					Bb.getWidth(), Bb.getHeight(), 1,1,
-					Bb.getRotation(), 0,0,
-					BwrdBulletTexture.getWidth(),BwrdBulletTexture.getHeight(),
-					false,false
-				);
-				//PlasmaEmission.setPosition(0 ,0);
-				//PlasmaEmission.draw(batch, Gdx.graphics.getDeltaTime());
-			}
 			
 		//draw touch pad
 			
@@ -431,21 +460,13 @@ public class WorldRenderer
 			sr.rect(e.getBounds().x,e.getBounds().y, e.getBounds().width, e.getBounds().height);
 		}
 		
-		//====== bullet bounding boxies ==============================
+		//====== bullet bounding boxes ==============================
 		//forward bullet
-		FbIter = Fbullets.iterator();
-		while(FbIter.hasNext())
+		bIter = bullets.iterator();
+		while(bIter.hasNext())
 		{
-			Fb = FbIter.next();
-			sr.rect(Fb.getBounds().x,Fb.getBounds().y, Fb.getBounds().width, Fb.getBounds().height);
-		}
-		
-		//backward bullet
-		BbIter = Bbullets.iterator();
-		while(BbIter.hasNext())
-		{
-			Bb = BbIter.next();
-			sr.rect(Bb.getBounds().x,Bb.getBounds().y, Bb.getBounds().width, Bb.getBounds().height);
+			b = bIter.next();
+			sr.rect(b.getBounds().x,b.getBounds().y, b.getBounds().width, b.getBounds().height);
 		}
 		
 		sr.end();
@@ -461,6 +482,26 @@ public class WorldRenderer
 		PlasmaEmission.getAngle().setHighMax(angle + 270 + 45);
 	}
 	
+	public void setMovex(boolean movex)
+	{
+		this.movex = movex;
+	}
+	
+	public boolean getMovex(boolean movex)
+	{
+		return this.movex;
+	}
+	
+	public void setMovey(boolean movey)
+	{
+		this.movey = movey;
+	}
+	
+	public boolean getMovey(boolean movey)
+	{
+		return this.movey;
+	}
+	
 	
 	public OrthographicCamera getCamera()
 	{
@@ -472,8 +513,7 @@ public class WorldRenderer
 		batch.dispose();
 		shipTexture.dispose();
 		sr.dispose();
-		FwrdBulletTexture.dispose();
-		BwrdBulletTexture.dispose();
+		BulletTexture.dispose();
 		trackerTexture.dispose();
 		skin.dispose();
 		stage.dispose();
