@@ -1,28 +1,21 @@
 package com.Aaron.HellFire.View;
 
-import java.awt.Button;
-import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.Aaron.HellFire.HellFire;
 import com.Aaron.HellFire.Models.Bullet;
 import com.Aaron.HellFire.Models.Enemy;
 import com.Aaron.HellFire.Models.MoveableEntity;
+import com.Aaron.HellFire.Models.PowerUp;
+import com.Aaron.HellFire.Models.PowerUpWeapons;
 import com.Aaron.HellFire.Models.Ship;
-import com.Aaron.HellFire.Models.Tracker;
-import com.Aaron.HellFire.Screens.GameScreen;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -37,11 +30,10 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.utils.Array;
 
 public class WorldRenderer
 {
@@ -55,23 +47,23 @@ public class WorldRenderer
 
 	Ship ship;
 	OrthographicCamera cam;//the view of the world!! or just the view of the current bounds showing the view of the stage... in this case space.
-	Texture shipTexture, trackerTexture, BulletTexture, BwrdBulletTexture, EnergyBarTexture, HudBgTexture;
-	float width, height, shipwidth, shipheight;
+	Texture shipTexture, trackerTexture, BulletTexture, BwrdBulletTexture, EnergyBarTexture, HudBgTexture, PowerUpWeaponsTexture;
+	float width, height;
 	ShapeRenderer sr;
 	
 	ArrayList<Bullet> bullets;
 	Iterator<Bullet> bIter;
-	Bullet b;
+	Bullet bullet;
 	
 	ArrayList<Enemy> enemies;
 	Iterator<Enemy> eIter;
+	Enemy enemy;
 	
-	public boolean movey;
-	public boolean movex;
+	ArrayList<PowerUp> powerups;
+	Iterator<PowerUp> PIter;
+	PowerUp powerup;
+	
 
-	
-	
-	Enemy e;
 	ParticleEmitter PlasmaEmission;
 
 	private Stage stage;
@@ -141,6 +133,14 @@ public class WorldRenderer
 		
 		EnergyBarTexture = new Texture("Hud/energyBar.png");
 		EnergyBarTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
+		
+		//set this within a if statement to change the sprite along with the
+		//power ups effects
+		//note power up effects change depending on what PowerUp type is
+		//rolled
+		
+		PowerUpWeaponsTexture = new Texture("data/GameSprites/ShipPwr.png");
+		PowerUpWeaponsTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
 		
 		sr = new ShapeRenderer();
 		
@@ -233,6 +233,10 @@ public class WorldRenderer
 		white = new BitmapFont(Gdx.files.internal("data/whitefont.fnt"), false);
 		black  = new BitmapFont(Gdx.files.internal("data/font.fnt"),false);
 		
+
+
+		
+		
 		//controller for buttons
     	buttonA.addListener(new InputListener()
     	{
@@ -295,10 +299,7 @@ public class WorldRenderer
 	    					world.addBullet(new  Bullet(Bullet.SPEED, 135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+90), new Vector2(-1,1)));//top left
     					}
     				}
-
-    			}
-    		
-    			
+    			}    			
     			return true;
     		}
     		public void touchUp (InputEvent event, float x, float y, int pointer, int button)
@@ -326,10 +327,6 @@ public class WorldRenderer
     	stage.addActor(buttonA);
     	stage.addActor(ButtonB);
     	
-    	
-    	
-    	
-	
 	}
 	
 	
@@ -341,6 +338,7 @@ public class WorldRenderer
 		ship = world.getShip();
 		enemies = world.getEnemies();
 		bullets = world.getBullets();
+		powerups = world.getPowerUps();
 		
 		//refresh camera position allow to focus player ship
 		//cam.position.set(ship.getPosition().x, ship.getPosition().y, 0);
@@ -350,7 +348,8 @@ public class WorldRenderer
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		
-												//==== PLayer user interface ===
+		
+		//==== PLayer user interface ===
 		
 		//DRAWS HUD BACKGROUND
 		//This is a test image, used to gauge hud background placement
@@ -378,11 +377,11 @@ public class WorldRenderer
 		
 		//DRAW PLAYER WEAPON LV
 		CharSequence weaponLvStr = "WpnLv : " + ship.getWeaponLv();
-		scoreFont.draw(batch, weaponLvStr, 50, 690);
+		scoreFont.draw(batch, weaponLvStr, 10, 680);
 		
 		//DRAW PLAYER WEAPON MODE ID
 		CharSequence weaponModeStr = "Mode : " + ship.getWeaponMode();
-		scoreFont.draw(batch, weaponModeStr, 300, 700);
+		scoreFont.draw(batch, weaponModeStr, 320, 700);
 		//END OF DRAW PLAYER STATS
 		
 
@@ -397,7 +396,8 @@ public class WorldRenderer
 
 		//========================== ship movment updates ===============================================
 		
-		//move player ship with d pad
+		//visual dsiplay for dpad, image moves based on
+		//where the touch pad is touched
 		ship.getVelocity().x =+ touchpad.getKnobPercentX();
 		ship.getVelocity().y =+ touchpad.getKnobPercentY();
 
@@ -413,25 +413,19 @@ public class WorldRenderer
 					shipTexture.getWidth(), shipTexture.getHeight(), false, false
 					);
 		
-		//dpad
-		
-		//set true false catchs here to stop momentum
-		
-		
-
 		
 		//draws enemy ship
 		eIter = enemies.iterator();
 		while(eIter.hasNext())
 		{
-			e = eIter.next();
+			enemy = eIter.next();
 			batch.draw(
 				//Draw tracker
 				trackerTexture,//texture name will have to change to accommodate more than one enemy
-				e.getPosition().x, e.getPosition().y,
-				e.getWidth()/2, e.getHeight()/2,//central axis of object simple division
-				e.getWidth(), e.getHeight(), 1, 1,//texture width and height, with scale ratios
-				e.getRotation(), 0, 0,//rotation
+				enemy.getPosition().x, enemy.getPosition().y,
+				enemy.getWidth()/2, enemy.getHeight()/2,//central axis of object simple division
+				enemy.getWidth(), enemy.getHeight(), 1, 1,//texture width and height, with scale ratios
+				enemy.getRotation(), 0, 0,//rotation
 				//Texture size, streach's texture
 				trackerTexture.getWidth(), trackerTexture.getHeight(),//draw how much of the texture area? right now its set to 100% of texture size
 				false, false//flips hor, vert etc
@@ -439,16 +433,16 @@ public class WorldRenderer
 		}
 		
 		//draws player bullets ==============================================
-			bIter = bullets.iterator();
+			bIter = bullets.iterator();//set rotation here for weapons new position, should fix bounding box
 			
 			while(bIter.hasNext())
 			{
-				b = bIter.next();
+				bullet = bIter.next();
 				batch.draw(
 					BulletTexture,
-					b.getPosition().x,b.getPosition().y, 0,0,
-					b.getWidth(), b.getHeight(), 1,1,
-					b.getRotation(), 0,0,
+					bullet.getPosition().x,bullet.getPosition().y, 0,0,
+					bullet.getWidth(), bullet.getHeight(), 1,1,
+					bullet.getRotation(), 0,0,
 					BulletTexture.getWidth(),BulletTexture.getHeight(),
 					false,false
 				);
@@ -457,23 +451,35 @@ public class WorldRenderer
 			}
 			
 			
-		//draw touch pad
+		//draw player power ups ==================================================
+			
+			PIter = powerups.iterator();
+			while(PIter.hasNext())
+			{
+				powerup = PIter.next();
+				batch.draw(
+						PowerUpWeaponsTexture,
+						powerup.getPosition().x, powerup.getPosition().y, 0,0,
+						powerup.getHeight(), powerup.getWidth(), 1,1,
+						0, 0,0,
+						PowerUpWeaponsTexture.getWidth(),PowerUpWeaponsTexture.getHeight(),
+						false,false
+					);
+			}
 			
 		batch.end();
-		
 		
 		//adds controller to stage
 		stage.act(Gdx.graphics.getDeltaTime());	    
 		stage.draw();
 		
 
-		// ==================== testing methods combined with volume and position of obects in game
+		// ==================== testing methods combined with volume and position of objects in game
 		sr.setProjectionMatrix(cam.combined);
 		sr.begin(ShapeType.Rectangle);
 		sr.setColor(Color.BLUE);
 		//encapsulate these in sr(); this makes the shape renderer that shows the bounds
 		sr.rect(ship.getBounds().x, ship.getBounds().y, ship.getBounds().width, ship.getBounds().height);//must re-size hit area
-		
 		
 		sr.setColor(Color.RED); 
 		
@@ -481,8 +487,8 @@ public class WorldRenderer
 		eIter = enemies.iterator();
 		while(eIter.hasNext())
 		{
-			e = eIter.next();
-			sr.rect(e.getBounds().x,e.getBounds().y, e.getBounds().width, e.getBounds().height);
+			enemy = eIter.next();
+			sr.rect(enemy.getBounds().x,enemy.getBounds().y, enemy.getBounds().width, enemy.getBounds().height);
 		}
 		
 		//====== bullet bounding boxes ==============================
@@ -490,8 +496,17 @@ public class WorldRenderer
 		bIter = bullets.iterator();
 		while(bIter.hasNext())
 		{
-			b = bIter.next();
-			sr.rect(b.getBounds().x,b.getBounds().y, b.getBounds().width, b.getBounds().height);
+			bullet = bIter.next();
+			sr.rect(bullet.getBounds().x,bullet.getBounds().y, bullet.getBounds().width, bullet.getBounds().height);
+		}
+		
+		sr.setColor(Color.PINK);
+		//poweUp bounding boxies
+		PIter = powerups.iterator();
+		while(PIter.hasNext())
+		{
+			powerup = PIter.next();
+			sr.rect(powerup.getBounds().x, powerup.getBounds().y, powerup.getBounds().width, powerup.getBounds().height);
 		}
 		
 		sr.end();
@@ -505,26 +520,6 @@ public class WorldRenderer
 		PlasmaEmission.getAngle().setLow(angle + 270);
 		PlasmaEmission.getAngle().setHighMin(angle + 270 - 45);
 		PlasmaEmission.getAngle().setHighMax(angle + 270 + 45);
-	}
-	
-	public void setMovex(boolean movex)
-	{
-		this.movex = movex;
-	}
-	
-	public boolean getMovex(boolean movex)
-	{
-		return this.movex;
-	}
-	
-	public void setMovey(boolean movey)
-	{
-		this.movey = movey;
-	}
-	
-	public boolean getMovey(boolean movey)
-	{
-		return this.movey;
 	}
 	
 	

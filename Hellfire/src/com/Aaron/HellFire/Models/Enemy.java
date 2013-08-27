@@ -5,12 +5,7 @@ import java.awt.*;
 
 public abstract class Enemy extends MoveableEntity
 {
-	private double x;
-	private double y;
-	private int r;
-	
-	private double speed;
-	
+
 	private int health;
 	private int type;
 	private int rank;
@@ -35,7 +30,6 @@ public abstract class Enemy extends MoveableEntity
 			//color1 = Color.BLUE;
 			if (rank == 1)
 			{
-				speed  = 2;
 				health = 4;
 			}
 		}

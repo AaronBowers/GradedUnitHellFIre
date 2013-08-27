@@ -1,14 +1,9 @@
 package com.Aaron.HellFire.Models;
-import com.Aaron.HellFire.Models.Bullet;
 
 import com.Aaron.HellFire.HellFire;
 import com.Aaron.HellFire.View.InputHandler;
 import com.Aaron.HellFire.View.World;
-import com.Aaron.HellFire.View.WorldRenderer;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -36,8 +31,7 @@ public class Ship extends MoveableEntity
 	private boolean firing;
 	private long firingTimer;
 	private long firingDelay;
-	
-	private boolean weaponCooldown;
+
 	
 	private boolean recovering; //player recovery state
 	private long recoveryTimer; //cooldown after hit, timer counts down until player can be hit again.
@@ -52,7 +46,9 @@ public class Ship extends MoveableEntity
 	
 	public int getHealthLevel() {return health;}
 	
+	//set and get weapon level
 	public int getWeaponLv() {return weaponLv;}
+	public void setWeaponLv(int Wlv) {weaponLv ++;}
 	
 	public int getWeaponMode() {return weaponMode;}
 	public void setWeaponMode() {changeMode();}//increase the count on weapon state

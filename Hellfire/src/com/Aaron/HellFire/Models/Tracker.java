@@ -1,6 +1,5 @@
 package com.Aaron.HellFire.Models;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 public class Tracker extends Enemy
@@ -13,8 +12,7 @@ public class Tracker extends Enemy
 	private int rank;
 	private int type;
 	
-	public Tracker(float SPEED, float rotation, float width, float height,
-			Vector2 position, int rank, int type)
+	public Tracker(float SPEED, float rotation, float width, float height, Vector2 position, int rank, int type)
 	{
 		super(SPEED, rotation, width/2, height/2, position, rank, type);
 		
@@ -31,7 +29,7 @@ public class Tracker extends Enemy
 		
 		
 		
-		position.y  = 720 / 2;
+		//position.y  = 720 / 2;
 		//position.x -r;
 		
 		rotation += delta * ROTATION_SPEED;

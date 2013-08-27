@@ -6,6 +6,8 @@ import java.util.Iterator;
 import com.Aaron.HellFire.HellFire;
 import com.Aaron.HellFire.Models.Bullet;
 import com.Aaron.HellFire.Models.Enemy;
+import com.Aaron.HellFire.Models.PowerUp;
+import com.Aaron.HellFire.Models.PowerUpWeapons;
 import com.Aaron.HellFire.Models.Ship;
 import com.Aaron.HellFire.Models.Tracker;
 import com.badlogic.gdx.Gdx;
@@ -20,11 +22,10 @@ public class World
 	Ship ship;
 	
 	public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
-
-	//public ArrayList<BulletFwrd> Fbullets = new ArrayList<BulletFwrd>();
-	//public ArrayList<BulletFwrd> Fbullets = new ArrayList<BulletFwrd>();
 	
 	public ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+	
+	public ArrayList<PowerUp> powerups = new ArrayList<PowerUp>();
 	
 	WorldRenderer wr;
 	
@@ -33,6 +34,9 @@ public class World
 	
 	Iterator<Enemy> eIter;
 	Enemy e;
+	
+	Iterator<PowerUp> PIter;
+	PowerUp p;
 	
 	private long waveStartTimer;
 	private long waveStartTimerDiff;
@@ -45,12 +49,12 @@ public class World
 		this.game = game;
 		
 		//player is created here
-		ship = new Ship(new Vector2(50, 720/2),2 ,1, 0, 10f);
+		ship = new Ship(new Vector2(50, 720/2),2 ,1, 0, 500f);
 		
 		waveStartTimer = 0;
 		waveStartTimerDiff = 0;
 		waveNumber = 0;
-
+		
 		createNewEnemies();
 		
 		Gdx.input.setInputProcessor(new InputHandler(this));
@@ -64,6 +68,9 @@ public class World
 	// the enemy must be destroyed and the timer then progresses to spawn another enemy, I did not use the delta time 
 	// to mesure this, instead i used the sysyems nano timer and dived that by 1million to get the time in seconds, please refer to the update method for timer details 
 	
+	//builds a single power up item.
+	
+	//constructs new test enemies on level
 	private void createNewEnemies()
 	{
 		enemies.clear();
@@ -80,6 +87,7 @@ public class World
 				x = (float) (Math.random() * 720 / 2);// a ranadom;y generated vertical position is generated. then enemy spawns
 				
 				enemies.add(new Tracker(1f, 0, 1, 1, new Vector2(i+1200,  x), 1, 1));
+
 			}
 		}
 		if (waveNumber == 2)
@@ -92,6 +100,7 @@ public class World
 				x = (float) (Math.random() * 720 / 2);
 				
 				enemies.add(new Tracker(1f, 0, 1, 1, new Vector2(i+1200,  x), 1, 1));
+
 			}
 		}
 		if (waveNumber == 3)
@@ -183,6 +192,9 @@ public class World
 		{
 			createNewEnemies();
 		}
+		
+		//CREATES NEW POWER UP ONSCREEN
+		//createNewPowerUp();
 
 		//updates bullets
 		bIter = bullets.iterator();
@@ -190,6 +202,14 @@ public class World
 		{
 			b = bIter.next();
 			b.update(ship);
+		}
+		
+		//update posttion of powerups
+		PIter = powerups.iterator();
+		while(PIter.hasNext())
+		{
+			p = PIter.next();
+			p.update(ship);
 		}
 		
 		//ship-level container Collision
@@ -204,13 +224,14 @@ public class World
 		//player static object collision
 		//what to expect- level objects
 		
-		//player-enemy collision
+		//enemy player collision checks
 		eIter = enemies.iterator();
 		while(eIter.hasNext())
 		{
 			e = eIter.next();
 			e.advance(Gdx.graphics.getDeltaTime(), ship);
 			//if(ship.getPosition().x > ship.getWidth()){ship.getPosition().x = ship.getWidth();} //left boundry
+
 			
 			if(ship.getBounds().overlaps(e.getBounds()))
 			{
@@ -228,12 +249,20 @@ public class World
 		}
 		
 		
+		
+		
 		// ======= Bullets Collisions =======================================================================================//
-		//enemy-bullet collision for forward bullets
+		//enemy-bullet collision
 		bIter = bullets.iterator();
 		while(bIter.hasNext())
 		{
 			b = bIter.next();
+			
+			if(b.getPosition().x > 1280 || b.getPosition().y > 650 || b.getPosition().x < 0 || b.getPosition().y < 0)
+			{
+				bIter.remove();
+			}
+	
 			eIter = enemies.iterator();
 			while(eIter.hasNext())
 			{
@@ -241,12 +270,14 @@ public class World
 				
 				if(e.getBounds().overlaps(b.getBounds()))
 				{
-					//Gdx.app.log(HellFire.LOG, "Enemy Disintegrated with Fb!");
-					//bIter.remove();//revomes item from array
-					//update player score
 					ship.addScore(e.getType() + e.getRank());
+					
+					//makes new power up item on enemy death
+					powerups.add(new PowerUpWeapons(1f, 0, 1, 1, new Vector2(e.getPosition().x,e.getPosition().y)));
+					
 					eIter.remove();
 					bIter.remove();
+					
 					
 					/*if(e.isDead())
 					{
@@ -259,15 +290,39 @@ public class World
 				//checks if bullets pass level boundary, bullets must be made first to ensure safe boundary check
 				//for this reason it has been placed within the bullet iterator. 
 				// so it will only check bullet level collision if there is a bullet available to check
-				if(b.getPosition().x > 1280 || b.getPosition().y > 720 || b.getPosition().x < 0 || b.getPosition().y < 0)
-				{
-					bIter.remove();
-				}
 			}
 		}
 		
 		//enemy-enemy collision
 		//make this work so an enemy can occupy the same space as another enemy
+		
+		//this is set the reverse way from how it should be
+		
+		//change to if ship collides into enemy
+		
+		
+		
+		
+		// ==== disabled atm =========================
+		//Player power-up collision
+		PIter = powerups.iterator();
+		while(PIter.hasNext())
+		{
+			p = PIter.next();
+			p.advance(Gdx.graphics.getDeltaTime(), ship);
+			//this power up changes the state of the ships weapons
+			//it duplicates the amount of bullets that will be 
+			//fired from the ship
+			if(ship.getBounds().overlaps(p.getBounds()))
+			{
+				//add detection for power up type
+				//increase power level
+				ship.setWeaponLv(+1);
+				PIter.remove();
+			}
+		}
+		//===============================================
+		
 		
 		
 		//bullet level collision
@@ -300,9 +355,18 @@ public class World
 	{
 		return bullets;
 	}
-	
-	
 
+	
+	public void addPowerUp(PowerUp Pu)
+	{
+		powerups.add(Pu);
+	}
+	
+	public ArrayList<PowerUp> getPowerUps()
+	{
+		return powerups;
+	}
+	
 	
 	public void setRenderer(WorldRenderer wr)
 	{
@@ -319,6 +383,7 @@ public class World
 		
 		
 	}
+
 	
 
 	
