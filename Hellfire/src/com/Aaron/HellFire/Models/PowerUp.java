@@ -2,11 +2,14 @@ package com.Aaron.HellFire.Models;
 
 import com.badlogic.gdx.math.Vector2;
 
+
 public abstract class PowerUp extends MoveableEntity
 {
 
 	//FIELDS
-	private int type;
+	protected int type;
+	Ship ship;
+
 	
 	//1 -- increase  weapon level
 	//2 -- increase  weapon Energy 
@@ -16,23 +19,28 @@ public abstract class PowerUp extends MoveableEntity
 	//6 -- bonus points
 	
 	
-	public PowerUp(float SPEED, float rotation, float width, float height, Vector2 position)
+	public PowerUp(float SPEED, float rotation, float width, float height, Vector2 position, int type)
 	{
 		super(SPEED, rotation, width*100, height*100, position);
+		
+		this.type = type;
+		
+		if (type == 1)
+		{
+			System.out.println("type 1 power up");
+			//ship.setWeaponLv(+1);
+		}
 		
 	}
 
 	
 	//Functions
 	
-	public int getType() { return this.type; }
-	public void setType(int type) {this.type = type;}
-	
 
 	//rotation not set, left as 0
 	public float getRotation() {return 0;}
 
-
+	public int getType() {return type;}
 	
 	public abstract void advance(float delta, Ship ship);
 

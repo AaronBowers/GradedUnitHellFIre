@@ -47,7 +47,8 @@ public class WorldRenderer
 
 	Ship ship;
 	OrthographicCamera cam;//the view of the world!! or just the view of the current bounds showing the view of the stage... in this case space.
-	Texture shipTexture, trackerTexture, BulletTexture, BwrdBulletTexture, EnergyBarTexture, HudBgTexture, PowerUpWeaponsTexture;
+	Texture shipTexture, trackerTexture, BulletTexture, BwrdBulletTexture, EnergyBarTexture, HudBgTexture, PowerUpWeaponsTexture, PowerUpEnergyTexture,
+	PowerUpSpeedTexture, PowerUpLivesTexture, PowerUpSpecialTexture, PowerUpBounsTexture;
 	float width, height;
 	ShapeRenderer sr;
 	
@@ -139,8 +140,24 @@ public class WorldRenderer
 		//note power up effects change depending on what PowerUp type is
 		//rolled
 		
-		PowerUpWeaponsTexture = new Texture("data/GameSprites/ShipPwr.png");
+		//power up 1
+		PowerUpWeaponsTexture = new Texture("data/GameSprites/WeaponPwr.png");
 		PowerUpWeaponsTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
+		//2
+		PowerUpEnergyTexture = new Texture("data/GameSprites/ShipPwr.png");
+		PowerUpEnergyTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
+		//3
+		PowerUpSpeedTexture = new Texture("data/GameSprites/ShipSpeed.png");
+		PowerUpSpeedTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
+		//4
+		PowerUpLivesTexture = new Texture("data/GameSprites/ShipLives.png");
+		PowerUpLivesTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
+		//5
+		PowerUpSpecialTexture = new Texture("data/GameSprites/ShipSpecial.png");
+		PowerUpSpecialTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
+		//6
+		PowerUpBounsTexture = new Texture("data/GameSprites/ShipBonus.png");
+		PowerUpBounsTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear );
 		
 		sr = new ShapeRenderer();
 		
@@ -236,7 +253,9 @@ public class WorldRenderer
 
 
 		
-		
+		//Sets each level of weapon power
+		//when weapon level increases so does the power demand
+		//
 		//controller for buttons
     	buttonA.addListener(new InputListener()
     	{
@@ -246,67 +265,142 @@ public class WorldRenderer
     			ship.setFiring(false);
     			int weaponDrain = 0;
     			int weaponMode = ship.getWeaponMode();
+    			int weaponLv = ship.getWeaponLv();
     			
-    			if(ship.getEnergyLevel() > 0)
+    			if (weaponLv == 0)
     			{
-    				if (weaponMode == 0)//fire forwards
-    				{
-    					//Gdx.app.log(HellFire.LOG, "Firing Weapons");
-    					weaponDrain = 4;
-    					if(ship.getEnergyLevel() >= weaponDrain)
-    					{
-        					ship.setEndergyLevel(weaponDrain);
-        					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+45), new Vector2(1,0)));
-    					}
-
-    				}
-    				
-    				if(weaponMode == 1)//fire backwards
-    				{
-    					weaponDrain = 4;
-    					if(ship.getEnergyLevel() >= weaponDrain)
-    					{
-        					ship.setEndergyLevel(weaponDrain);
-        					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+45), new Vector2(-1,0)));
-    					}
-
-    				}
-    				
-    				if(weaponMode == 2)//fire backwards
-    				{
-    					weaponDrain = 8;
-    					if(ship.getEnergyLevel() >= weaponDrain)
-    					{
-        					ship.setEndergyLevel(weaponDrain);
-        					world.addBullet(new  Bullet(Bullet.SPEED, 90, .3f,.1f, new Vector2(ship.getPosition().x+180/2, ship.getPosition().y+90), new Vector2(0,1)));//up bullet
-        					world.addBullet(new  Bullet(Bullet.SPEED, -90, .3f,.1f, new Vector2(ship.getPosition().x+180/2, ship.getPosition().y), new Vector2(0,-1)));//down bullet
-    					}
-    				}
-    				
-    				if(weaponMode == 3)//fire backwards
-    				{
-    					weaponDrain = 16;
-    					if(ship.getEnergyLevel() >= weaponDrain)
-    					{
-	    					ship.setEndergyLevel(weaponDrain);
-	    					
-	    					//front top right and bottom right
-	    					world.addBullet(new  Bullet(Bullet.SPEED, 45, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+90), new Vector2(1,1)));//top right
-	    					world.addBullet(new  Bullet(Bullet.SPEED, -45, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y), new Vector2(1,-1)));//bottom right
-	    					
-	    					//back top left and bottom left
-	    					world.addBullet(new  Bullet(Bullet.SPEED, -135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y), new Vector2(-1,-1)));//bottom left
-	    					world.addBullet(new  Bullet(Bullet.SPEED, 135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+90), new Vector2(-1,1)));//top left
-    					}
-    				}
-    			}    			
+		        			if(ship.getEnergyLevel() > 0)
+		        			{
+		        				if (weaponMode == 0)//fire forwards
+		        				{
+		        					//Gdx.app.log(HellFire.LOG, "Firing Weapons");
+		        					weaponDrain = 4;
+		        					if(ship.getEnergyLevel() >= weaponDrain)
+		        					{
+		            					ship.setEndergyLevel(weaponDrain);
+		            					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+45), new Vector2(1,0)));
+		        					}
+		
+		        				}
+		        				
+		        				if(weaponMode == 1)//fire backwards
+		        				{
+		        					weaponDrain = 4;
+		        					if(ship.getEnergyLevel() >= weaponDrain)
+		        					{
+		            					ship.setEndergyLevel(weaponDrain);
+		            					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+45), new Vector2(-1,0)));
+		        					}
+		
+		        				}
+		        				
+		        				if(weaponMode == 2)//fire up down
+		        				{
+		        					weaponDrain = 8;
+		        					if(ship.getEnergyLevel() >= weaponDrain)
+		        					{
+		            					ship.setEndergyLevel(weaponDrain);
+		            					world.addBullet(new  Bullet(Bullet.SPEED, 90, .3f,.1f, new Vector2(ship.getPosition().x+180/2, ship.getPosition().y+90), new Vector2(0,1)));//up bullet
+		            					world.addBullet(new  Bullet(Bullet.SPEED, -90, .3f,.1f, new Vector2(ship.getPosition().x+180/2, ship.getPosition().y), new Vector2(0,-1)));//down bullet
+		        					}
+		        				}
+		        				
+		        				if(weaponMode == 3)//fire diagonal
+		        				{
+		        					weaponDrain = 16;
+		        					if(ship.getEnergyLevel() >= weaponDrain)
+		        					{
+		    	    					ship.setEndergyLevel(weaponDrain);
+		    	    					
+		    	    					//front top right and bottom right
+		    	    					world.addBullet(new  Bullet(Bullet.SPEED, 45, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+90), new Vector2(1,1)));//top right
+		    	    					world.addBullet(new  Bullet(Bullet.SPEED, -45, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y), new Vector2(1,-1)));//bottom right
+		    	    					
+		    	    					//back top left and bottom left
+		    	    					world.addBullet(new  Bullet(Bullet.SPEED, -135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y), new Vector2(-1,-1)));//bottom left
+		    	    					world.addBullet(new  Bullet(Bullet.SPEED, 135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+90), new Vector2(-1,1)));//top left
+		        					}
+		        				}
+		        			} 
+    			}
+    			else if (weaponLv == 1)
+    			{
+    				int leveldrain = 1;
+		        			if(ship.getEnergyLevel() > 0)
+		        			{
+		        				if (weaponMode == 0)//fire forwards
+		        				{
+		        					//Gdx.app.log(HellFire.LOG, "Firing Weapons");
+		        					weaponDrain = 4 + leveldrain;
+		        					if(ship.getEnergyLevel() >= weaponDrain)
+		        					{
+		            					ship.setEndergyLevel(weaponDrain);
+		            					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+60), new Vector2(1,0)));
+		            					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+30), new Vector2(1,0)));
+		        					}
+		
+		        				}
+		        				
+		        				if(weaponMode == 1)//fire backwards
+		        				{
+		        					weaponDrain = 4 + leveldrain;
+		        					if(ship.getEnergyLevel() >= weaponDrain)
+		        					{
+		            					ship.setEndergyLevel(weaponDrain);
+		            					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+60), new Vector2(-1,0)));
+		            					world.addBullet(new  Bullet(Bullet.SPEED, 0, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+30), new Vector2(-1,0)));
+		        					}
+		
+		        				}
+		        				
+		        				if(weaponMode == 2)//fire up down
+		        				{
+		        					weaponDrain = 8 + leveldrain;
+		        					if(ship.getEnergyLevel() >= weaponDrain)
+		        					{
+		            					ship.setEndergyLevel(weaponDrain);
+		            					world.addBullet(new  Bullet(Bullet.SPEED, 90, .3f,.1f, new Vector2(ship.getPosition().x+180/4, ship.getPosition().y+90), new Vector2(0,1)));//up bullet
+		            					world.addBullet(new  Bullet(Bullet.SPEED, 90, .3f,.1f, new Vector2(ship.getPosition().x+180/4 + 180/2, ship.getPosition().y+90), new Vector2(0,1)));//up bullet
+		            					
+		            					world.addBullet(new  Bullet(Bullet.SPEED, -90, .3f,.1f, new Vector2(ship.getPosition().x+180/4, ship.getPosition().y), new Vector2(0,-1)));//down bullet
+		            					world.addBullet(new  Bullet(Bullet.SPEED, -90, .3f,.1f, new Vector2(ship.getPosition().x+180/4 + 180/2, ship.getPosition().y), new Vector2(0,-1)));//down bullet
+		        					}
+		        				}
+		        				
+		        				if(weaponMode == 3)//fire diagonal
+		        				{
+		        					weaponDrain = 16 + leveldrain;
+		        					if(ship.getEnergyLevel() >= weaponDrain)
+		        					{
+		    	    					ship.setEndergyLevel(weaponDrain);
+		    	    					
+		    	    					//front top right and bottom right
+		    	    					world.addBullet(new  Bullet(Bullet.SPEED, 45, .3f,.1f, new Vector2(ship.getPosition().x+170, ship.getPosition().y+90), new Vector2(1,1)));//top right
+		    	    					world.addBullet(new  Bullet(Bullet.SPEED, 45, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+80), new Vector2(1,1)));//top right
+		    	    					
+		    	    					world.addBullet(new  Bullet(Bullet.SPEED, -45, .3f,.1f, new Vector2(ship.getPosition().x+180, ship.getPosition().y+10), new Vector2(1,-1)));//bottom right
+		    	    					world.addBullet(new  Bullet(Bullet.SPEED, -45, .3f,.1f, new Vector2(ship.getPosition().x+170, ship.getPosition().y), new Vector2(1,-1)));//bottom right
+		    	    					
+		    	    					//back top left and bottom left
+		    	    					world.addBullet(new  Bullet(Bullet.SPEED, -135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+10), new Vector2(-1,-1)));//bottom left
+		    	    					world.addBullet(new  Bullet(Bullet.SPEED, -135, .3f,.1f, new Vector2(ship.getPosition().x+10, ship.getPosition().y), new Vector2(-1,-1)));//bottom left
+		    	    					
+		    	    					world.addBullet(new  Bullet(Bullet.SPEED, 135, .3f,.1f, new Vector2(ship.getPosition().x, ship.getPosition().y+80), new Vector2(-1,1)));//top left
+		    	    					world.addBullet(new  Bullet(Bullet.SPEED, 135, .3f,.1f, new Vector2(ship.getPosition().x+10, ship.getPosition().y+90), new Vector2(-1,1)));//top left
+		        					}
+		        				}
+		        			}				
+    			}
+    			
     			return true;
     		}
+    		
     		public void touchUp (InputEvent event, float x, float y, int pointer, int button)
     		{
     			System.out.println("A Up");
     			ship.setFiring(true);
     		}
+    		
     	});	
     	
     	//Listener for change weapon cycle
@@ -457,14 +551,72 @@ public class WorldRenderer
 			while(PIter.hasNext())
 			{
 				powerup = PIter.next();
-				batch.draw(
-						PowerUpWeaponsTexture,
-						powerup.getPosition().x, powerup.getPosition().y, 0,0,
-						powerup.getHeight(), powerup.getWidth(), 1,1,
-						0, 0,0,
-						PowerUpWeaponsTexture.getWidth(),PowerUpWeaponsTexture.getHeight(),
-						false,false
-					);
+				if (powerup.getType() == 1)
+				{
+					batch.draw(
+							PowerUpWeaponsTexture,
+							powerup.getPosition().x, powerup.getPosition().y, 0,0,
+							powerup.getHeight(), powerup.getWidth(), 1,1,
+							0, 0,0,
+							PowerUpWeaponsTexture.getWidth(),PowerUpWeaponsTexture.getHeight(),
+							false,false
+						);
+				}
+				else if (powerup.getType() == 2)
+				{
+					batch.draw(
+							PowerUpEnergyTexture,
+							powerup.getPosition().x, powerup.getPosition().y, 0,0,
+							powerup.getHeight(), powerup.getWidth(), 1,1,
+							0, 0,0,
+							PowerUpEnergyTexture.getWidth(),PowerUpEnergyTexture.getHeight(),
+							false,false
+						);
+				}
+				else if (powerup.getType() == 3)
+				{
+					batch.draw(
+							PowerUpSpeedTexture,
+							powerup.getPosition().x, powerup.getPosition().y, 0,0,
+							powerup.getHeight(), powerup.getWidth(), 1,1,
+							0, 0,0,
+							PowerUpSpeedTexture.getWidth(),PowerUpSpeedTexture.getHeight(),
+							false,false
+						);
+				}
+				else if (powerup.getType() == 4)
+				{
+					batch.draw(
+							PowerUpLivesTexture,
+							powerup.getPosition().x, powerup.getPosition().y, 0,0,
+							powerup.getHeight(), powerup.getWidth(), 1,1,
+							0, 0,0,
+							PowerUpLivesTexture.getWidth(),PowerUpLivesTexture.getHeight(),
+							false,false
+						);
+				}
+				else if (powerup.getType() == 5)
+				{
+					batch.draw(
+							PowerUpSpecialTexture,
+							powerup.getPosition().x, powerup.getPosition().y, 0,0,
+							powerup.getHeight(), powerup.getWidth(), 1,1,
+							0, 0,0,
+							PowerUpSpecialTexture.getWidth(),PowerUpSpecialTexture.getHeight(),
+							false,false
+						);
+				}
+				else if (powerup.getType() == 6)
+				{
+					batch.draw(
+							PowerUpBounsTexture,
+							powerup.getPosition().x, powerup.getPosition().y, 0,0,
+							powerup.getHeight(), powerup.getWidth(), 1,1,
+							0, 0,0,
+							PowerUpBounsTexture.getWidth(),PowerUpBounsTexture.getHeight(),
+							false,false
+						);
+				}
 			}
 			
 		batch.end();

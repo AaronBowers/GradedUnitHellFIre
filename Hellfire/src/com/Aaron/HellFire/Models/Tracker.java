@@ -12,12 +12,12 @@ public class Tracker extends Enemy
 	private int rank;
 	private int type;
 	
-	public Tracker(float SPEED, float rotation, float width, float height, Vector2 position, int rank, int type)
+	public Tracker(float SPEED, float rotation, float width, float height, Vector2 position, int type, int rank)
 	{
 		super(SPEED, rotation, width/2, height/2, position, rank, type);
 		
-		rank = 1;
-		type = 1;
+		this.rank = rank;
+		this.type = type;
 	}
 
 

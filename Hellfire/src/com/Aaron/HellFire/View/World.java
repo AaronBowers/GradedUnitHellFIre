@@ -7,6 +7,11 @@ import com.Aaron.HellFire.HellFire;
 import com.Aaron.HellFire.Models.Bullet;
 import com.Aaron.HellFire.Models.Enemy;
 import com.Aaron.HellFire.Models.PowerUp;
+import com.Aaron.HellFire.Models.PowerUpBonus;
+import com.Aaron.HellFire.Models.PowerUpEnergy;
+import com.Aaron.HellFire.Models.PowerUpLives;
+import com.Aaron.HellFire.Models.PowerUpSpecial;
+import com.Aaron.HellFire.Models.PowerUpSpeed;
 import com.Aaron.HellFire.Models.PowerUpWeapons;
 import com.Aaron.HellFire.Models.Ship;
 import com.Aaron.HellFire.Models.Tracker;
@@ -248,7 +253,7 @@ public class World
 			}
 		}
 		
-		
+	
 		
 		
 		// ======= Bullets Collisions =======================================================================================//
@@ -272,13 +277,42 @@ public class World
 				{
 					ship.addScore(e.getType() + e.getRank());
 					
-					//makes new power up item on enemy death
-					powerups.add(new PowerUpWeapons(1f, 0, 1, 1, new Vector2(e.getPosition().x,e.getPosition().y)));
+					//power up chance type
+					double rand = Math.random();
 					
+					 if(rand  < 0.005)
+					{
+						powerups.add(new PowerUpBonus(1f, 0, 1, 1, new Vector2(e.getPosition().x,e.getPosition().y),6));
+					}
+					else if(rand  < 0.010)
+					{
+						powerups.add(new PowerUpSpecial(1f, 0, 1, 1, new Vector2(e.getPosition().x,e.getPosition().y),5));
+					}
+					else if(rand  < 1.040)
+					{
+						powerups.add(new PowerUpLives(1f, 0, 1, 1, new Vector2(e.getPosition().x,e.getPosition().y),4));
+					}
+					else if(rand  < 0.050)
+					{
+						powerups.add(new PowerUpSpeed(1f, 0, 1, 1, new Vector2(e.getPosition().x,e.getPosition().y),3));
+					}
+					else if(rand  < 0.00)
+					{
+						powerups.add(new PowerUpEnergy(1f, 0, 1, 1, new Vector2(e.getPosition().x,e.getPosition().y),2));
+					}
+					else if(rand < 0.001 )//doesnt spawn more power ups past lv2
+					{
+						//set graphic to speed power up
+						powerups.add(new PowerUpWeapons(1f, 0, 1, 1, new Vector2(e.getPosition().x,e.getPosition().y), 1));
+					}
+					else 
+					{
+						//no power up
+					}
+					
+
 					eIter.remove();
 					bIter.remove();
-					
-					
 					/*if(e.isDead())
 					{
 						ship.addScore(e.getType() + e.getRank());
@@ -297,13 +331,8 @@ public class World
 		//make this work so an enemy can occupy the same space as another enemy
 		
 		//this is set the reverse way from how it should be
+
 		
-		//change to if ship collides into enemy
-		
-		
-		
-		
-		// ==== disabled atm =========================
 		//Player power-up collision
 		PIter = powerups.iterator();
 		while(PIter.hasNext())
@@ -317,19 +346,17 @@ public class World
 			{
 				//add detection for power up type
 				//increase power level
-				ship.setWeaponLv(+1);
+				if (p.getType() == 1) { ship.setWeaponLv(+1) ;}
+				else if (p.getType() == 2) { ship.setEndergyTotal(+20); }
+				else if (p.getType() == 3) { ship.setSpeedState(+20); }
+				else if (p.getType() == 4) { ship.addLives(+1); }
+				else if (p.getType() == 5) { ship.setSpecialWeaponCharge(+1); }
+				else if (p.getType() == 6) { ship.addScore(+20); }
+						
 				PIter.remove();
 			}
 		}
-		//===============================================
-		
-		
-		
-		//bullet level collision
 
-		
-		
-		/*
 		//check dead enemies		
 		for(int i = 0; i < enemies.size(); i++)
 		{
@@ -340,8 +367,7 @@ public class World
 				enemies.remove(i);
 				i--;
 			}
-		}*/
-			
+		}
 	}	
 		
 

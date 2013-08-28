@@ -23,6 +23,7 @@ public class Ship extends MoveableEntity
 	private int weaponLv;//power up counter for ship weapons
 	private int weaponMode;//indicator for weapon mode
 	private int speedLv;//power up counter for ship speed
+	private int specialAmount;
 	
 	//private int bonus;
 	
@@ -38,7 +39,14 @@ public class Ship extends MoveableEntity
 	
 	
 	//FUCNTIONS
+	
+	public void setSpecialWeaponCharge(int specialAmount) {this.specialAmount = specialAmount;}
+	
+	public void addLives(int lives) { this.lives += lives ;}
 	public int getLives() {return lives;}
+	
+	public void setEndergyTotal(int energy) {this.energy = energy;}
+	
 	public int getScore() {return score;}
 	
 	public int getEnergyLevel() {return energy;}
@@ -48,11 +56,12 @@ public class Ship extends MoveableEntity
 	
 	//set and get weapon level
 	public int getWeaponLv() {return weaponLv;}
-	public void setWeaponLv(int Wlv) {weaponLv ++;}
+	public void setWeaponLv(int Wlv) {weaponLv += Wlv;}
 	
 	public int getWeaponMode() {return weaponMode;}
 	public void setWeaponMode() {changeMode();}//increase the count on weapon state
 	
+	public void setSpeedState(int speedLv) {this.speedLv = speedLv;}
 	public int getSpeedState() {return speedLv;}
 	
 	//CONTROLS ====================================================
@@ -91,13 +100,18 @@ public class Ship extends MoveableEntity
 
 		recovering = false;
 		recoveryTimer = 0;
+		
 		lives = 3;
-		health = 1;
+		health = 1;//not used yet
 		energy = 100;//used to power weapons
-		weaponMode = 0;
+		specialAmount = 0;
+		
 		weaponLv = 0;//power up counter for ship weapons
 		speedLv = 0;//power up counter for ship speed
+		
 		score = 0;
+		weaponMode = 0;
+
 	}
 	
 	//@Override
@@ -137,5 +151,8 @@ public class Ship extends MoveableEntity
 		
 		
 	}
+
+
+
 
 }

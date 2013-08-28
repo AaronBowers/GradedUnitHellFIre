@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.FPSLogger;
 public class HellFire extends Game
 {
 
-	public static final String VERSION = "0.0.0.08 Pre-Alpha";
+	public static final String VERSION = "0.0.1.0 Pre-Alpha";
 	public static final String LOG = "HellFire";
 	FPSLogger log;
 	
