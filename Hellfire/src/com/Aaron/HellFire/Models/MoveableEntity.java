@@ -16,6 +16,7 @@ public abstract class MoveableEntity extends Entity
 		velocity = new Vector2(0,0);
 	}
 	
+	
 	public Vector2 getVelocity()
 	{
 		return velocity;

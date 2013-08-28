@@ -1,6 +1,7 @@
 package com.Aaron.HellFire;
 
 import com.Aaron.HellFire.Screens.GameScreen;
+import com.Aaron.HellFire.Screens.MainMenu;
 import com.Aaron.HellFire.Screens.SplashScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.FPSLogger;
@@ -8,7 +9,7 @@ import com.badlogic.gdx.graphics.FPSLogger;
 public class HellFire extends Game
 {
 
-	public static final String VERSION = "0.0.0.04 Pre-Alpha";
+	public static final String VERSION = "0.0.1.0 Pre-Alpha";
 	public static final String LOG = "HellFire";
 	FPSLogger log;
 	
@@ -31,6 +32,11 @@ public class HellFire extends Game
 	{		
 		super.render();
 		log.log();
+	}
+	
+	public FPSLogger getFps()
+	{
+		return log;
 	}
 
 	@Override
